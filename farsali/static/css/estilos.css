@@ -78,6 +78,10 @@
     width: 30%;
 }
 
+article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
+    display: none;
+}
+
 .contact-form__form--item-text {
     display: flex;
     flex-direction: column;
