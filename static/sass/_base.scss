@@ -51,9 +51,11 @@ p {
     }
     .enlace__producto {
         color: $Mor;
+        text-decoration: none;
         &:hover {
             transition: all .6s;
             color: $Dor;
+            text-decoration: none;
         }
     }
 }

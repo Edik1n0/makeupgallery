@@ -51,10 +51,12 @@ p {
 }
 .enlaces-pdetail .enlace__producto {
   color: #651168;
+  text-decoration: none;
 }
 .enlaces-pdetail .enlace__producto:hover {
   transition: all 0.6s;
   color: #f8bd3e;
+  text-decoration: none;
 }
 
 .modal {
