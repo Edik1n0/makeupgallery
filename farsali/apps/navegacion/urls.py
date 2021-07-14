@@ -10,9 +10,7 @@ from ..views import (
     login_farsali,
     logout_farsali,
 )
-from .views import callbackGatewayMercadoPagoView  # ajax_highligths
 from .views import (
-    callbackGatewayWompiView,
     categoryView,
     checkoutView,
     contactoView,
@@ -47,13 +45,6 @@ urlpatterns = [
     path("resumen_pago/", paymentView.as_view(), name="resumen_pago"),
     path("lista_productos/", productsView, name="lista_productos"),
     path("lista_categorias/", categoryView, name="lista_categorias"),
-    # callback de las pasarelas de pagos
-    path("callback_pago_wompi/", callbackGatewayWompiView, name="callback_pago_wompi"),
-    path(
-        "callback_pago_mercadopago/",
-        callbackGatewayMercadoPagoView,
-        name="callback_pago_mercadopago",
-    ),
     path("redirect_pago/<reference>/", redirectPaymentView.as_view(), name="redirect_pago"),
     path("payment_cash/", paymentCashView, name="payment_cash"),
     path("registro_farsali/", ClienteViewMixin.as_view(), name="registro_farsali"),
