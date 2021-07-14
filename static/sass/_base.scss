@@ -42,6 +42,22 @@ p {
 
 /*HEADER*/
 
+.enlaces-pdetail {
+    display: flex;
+    margin: 10px;
+
+    @media (max-width: 768px) {
+        display: grid;
+    }
+    .enlace__producto {
+        color: $Mor;
+        &:hover {
+            transition: all .6s;
+            color: $Dor;
+        }
+    }
+}
+
 .modal {
     padding: 1rem;
 
