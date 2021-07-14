@@ -63,7 +63,7 @@
                                 </div>
                             </div>
 
-                            <div class="div-box-price">
+                            <!-- <div class="div-box-price">
                                 {% if producto.descuento_principal > 0 and producto.descuento_mayor > 0 %}
                                     <p class="products__info--price-discount">$ {{ producto.costo_farsali|floatformat:"0"|intcomma }} COP</p>
                                     <p class="product__detail--price">$ {{ producto.descuento_mayor|floatformat:"0"|intcomma }} COP</p>
@@ -78,7 +78,7 @@
                                         <input type="number" min="0" value="0" name="quantity_box" id="cantidad_xmayor-{{ producto.id }}" class="form-control">
                                     {% endif %}
                                 </div>
-                            </div>
+                            </div> -->
 
                             
                         </div>
@@ -100,7 +100,7 @@
 
             <div class="product__detail--options">
 
-                <div class="detail__options--chart">
+                <!-- <div class="detail__options--chart">
                     <button 
                         class="products__info--btn add-carrito"
                         data-product-serialize="{% json_serialize producto %}">
@@ -112,7 +112,7 @@
                           fbq('track', 'Purchase', {currency: "COP", value: 30.000});
                         });
                     </script>
-                </div>
+                </div> -->
 
                 <div class="detail__options--chart">
                         <input type="hidden" id="validate-buy" name="validate-buy" value="1"/>
@@ -136,11 +136,11 @@
                     </a>
                 </div>
             </div>
-            <div class="boton-comentarios">
+            <!-- <div class="boton-comentarios">
                 <button type="button" class="btn comment-product__btn" data-toggle="modal" data-target="#exampleModalComment">
                     Ver comentarios del {{ producto.nombre|safe }}
                     </button>
-            </div>
+            </div> -->
 
                 </form>
 
@@ -170,7 +170,7 @@
         </div>
     </div>
 
-    <!-- <div class="comment-product">
+    <div class="comment-product">
         <div class="div-description-product">
             <p class="products__detail--paragraph">{{ producto.descripcion|safe }}</p>
         </div>
@@ -223,7 +223,7 @@
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
 
 
 </div>
