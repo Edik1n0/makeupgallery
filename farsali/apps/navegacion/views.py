@@ -16,11 +16,14 @@ from farsali.apps.clientes.models import Cliente
 from farsali.apps.models import Constante
 from farsali.apps.utils import send_invoice
 from farsali.apps.ventas.models import Venta, VentaProducts
-from farsali.settings import (EPAYCO_PUBLIC_KEY, MERCADOPAGO_ACCESS_TOKEN,
-                              MERCADOPAGO_URL, WOMPI_PUBLIC_KEY)
+from farsali.settings import (
+    EPAYCO_PUBLIC_KEY,
+    MERCADOPAGO_ACCESS_TOKEN,
+    MERCADOPAGO_URL,
+    WOMPI_PUBLIC_KEY,
+)
 
-from ..inventario.models import (CategoriaProducto, Comentario, Descuento,
-                                 Marca, Producto)
+from ..inventario.models import CategoriaProducto, Comentario, Descuento, Marca, Producto
 from ..models import Background, Generic, Pasarelas
 
 
@@ -708,7 +711,6 @@ class paymentView(View):
         print(request.POST.get("productos"))
         json_data = json.loads(request.POST.get("productos"))
         print(json_data)
-        mp = mercadopago.MP(MERCADOPAGO_ACCESS_TOKEN)
         items = []
         total = 0
         cantidad_total = 0
@@ -798,42 +800,6 @@ class paymentView(View):
                     by_mayor=True,
                 )
                 products.save()
-
-        pasarela = Pasarelas.objects.filter(activo=True).first()
-        response = None
-        wompi = None
-        epayco = None
-        url_redirect = ""
-        url_response = ""
-        url_mercadopgos = ""
-        if pasarela.origen == 0:
-            preference = {
-                "external_reference": ventas.id,
-                "items": items,
-                "back_urls": {
-                    "success": f"https://www.farsalicolombia.com/redirect_pago/{ventas.id}/?success=1",
-                    "failure": f"https://www.farsalicolombia.com/redirect_pago/{ventas.id}/?failure=1",
-                    "pending": f"https://www.farsalicolombia.com/redirect_pago/{ventas.id}/",
-                },
-                "auto_return": "approved",
-            }
-            create_preference_result = mp.create_preference(preference)
-            print(create_preference_result)
-            response = create_preference_result["response"]["id"]
-            url_mercadopgos = create_preference_result["response"]["init_point"]
-            ventas.referencia_pasarela = response
-        elif pasarela.origen == 1:
-            response = ventas.referencia
-            wompi = WOMPI_PUBLIC_KEY
-            url_redirect = f"https://www.farsalicolombia.com/redirect_pago/{ventas.id}/"
-
-        elif pasarela.origen == 2:
-            response = ventas.referencia
-            epayco = EPAYCO_PUBLIC_KEY
-            url_redirect = f"https://www.farsalicolombia.com/redirect_pago/{ventas.id}/"
-            url_response = f"https://www.farsalicolombia.com/redirect_pago/{ventas.id}/"
-
-        ventas.tipo_pasarela = pasarela
         ventas.total = total
         ventas.save()
         return render(
@@ -842,16 +808,9 @@ class paymentView(View):
             context={
                 "venta_id": ventas.id,
                 "page_name": self.page_name,
-                "preference": response,
-                "pasarela": pasarela.origen,
-                "wompi": wompi,
-                "epayco": epayco,
                 "products": items,
                 "total": total,
                 "client": client,
-                "url_mercadopgos": url_mercadopgos,
-                "url_response": url_response,
-                "url_redirect": url_redirect,
             },
         )
 
@@ -904,171 +863,3 @@ def paymentCashView(request):
     return render(
         request, "base/redirect_payment.html", context={"page_name": page_name, "venta": venta}
     )
-
-
-# callback of the payments
-
-
-@csrf_exempt
-def callbackGatewayWompiView(request):
-    print(request.method)
-    if request.method == "POST":
-        json_data = json.loads(request.body.decode("utf-8"))
-        print("WompiCallback")
-        print(json_data)
-        if json_data["event"] == "transaction.updated":
-            data = json_data["data"]["transaction"]
-            venta = Venta.objects.get(referencia=data["reference"])
-            venta.metodo_pago = data["payment_method_type"]
-            venta.transaccion_id = data["id"]
-            if data["status"] == "APPROVED" and not (
-                venta.estado == "rechazado" or venta.estado == "aprobado"
-            ):
-                if venta.estado == "proceso":
-                    ventas_productos = VentaProducts.objects.filter(venta=venta)
-                    for item in ventas_productos:
-                        cantidad = 0
-                        if item.by_venta_caja:
-                            cantidad = item.producto.cantidad_cajas * item.cantidad
-                        elif item.by_mayor:
-                            cantidad = item.producto.cantidad_cajas_prefer * item.cantidad
-                        else:
-                            cantidad = item.cantidad
-                        item.producto.cantidad -= cantidad
-                        item.producto.save()
-                venta.estado = "aprobado"
-
-            elif data["status"] == "DECLINED" and not (
-                venta.estado == "rechazado" or venta.estado == "aprobado"
-            ):
-                if venta.estado == "espera_respuesta_pasarela":
-                    ventas_productos = VentaProducts.objects.filter(venta=venta)
-                    for item in ventas_productos:
-                        cantidad = 0
-                        if item.by_venta_caja:
-                            cantidad = item.producto.cantidad_cajas * item.cantidad
-                        elif item.by_mayor:
-                            cantidad = item.producto.cantidad_cajas_prefer * item.cantidad
-                        else:
-                            cantidad = item.cantidad
-                        item.producto.cantidad += cantidad
-                        item.producto.save()
-                venta.estado = "rechazado"
-
-            else:
-                if venta.estado == "espera_respuesta_pasarela":
-                    ventas_productos = VentaProducts.objects.filter(venta=venta)
-                    for item in ventas_productos:
-                        cantidad = 0
-                        if item.by_venta_caja:
-                            cantidad = item.producto.cantidad_cajas * item.cantidad
-                        elif item.by_mayor:
-                            cantidad = item.producto.cantidad_cajas_prefer * item.cantidad
-                        else:
-                            cantidad = item.cantidad
-                        item.producto.cantidad += cantidad
-                        item.producto.save()
-                venta.estado = "error_pasarela"
-
-            venta.save()
-            return HttpResponse("Todo ok")
-        else:
-            return HttpResponse("event not found")
-    return HttpResponse("method not allowed")
-
-
-@csrf_exempt
-def callbackGatewayMercadoPagoView(request):
-    print(request.method)
-    if request.method == "POST":
-        topic = request.GET.get("topic") if request.GET.get("topic") else None
-        payment_id = request.GET.get("id") if request.GET.get("id") else None
-        if topic and payment_id:
-            url_mercadopago = MERCADOPAGO_URL + payment_id
-            headers = {"Authorization": "Bearer " + MERCADOPAGO_ACCESS_TOKEN}
-            response = requests.get(url_mercadopago, headers=headers)
-            print(response)
-            if response.status_code == 200:
-                data_json = response.json()
-                print(data_json)
-                venta = Venta.objects.get(pk=data_json["external_reference"])
-                if data_json["status"] == "approved" and not (
-                    venta.estado == "rechazado" or venta.estado == "aprobado"
-                ):
-                    if venta.estado == "proceso":
-                        ventas_productos = VentaProducts.objects.filter(venta=venta)
-                        for item in ventas_productos:
-                            cantidad = 0
-                            if item.by_venta_caja:
-                                cantidad = item.producto.cantidad_cajas * item.cantidad
-                            elif item.by_mayor:
-                                cantidad = item.producto.cantidad_cajas_prefer * item.cantidad
-                            else:
-                                cantidad = item.cantidad
-                            item.producto.cantidad -= cantidad
-                            item.producto.save()
-                    venta.estado = "aprobado"
-
-                elif data_json["status"] == "rejected" and not (
-                    venta.estado == "rechazado" or venta.estado == "aprobado"
-                ):
-                    if venta.estado == "espera_respuesta_pasarela":
-                        ventas_productos = VentaProducts.objects.filter(venta=venta)
-                        for item in ventas_productos:
-                            cantidad = 0
-                            if item.by_venta_caja:
-                                cantidad = item.producto.cantidad_cajas * item.cantidad
-                            elif item.by_mayor:
-                                cantidad = item.producto.cantidad_cajas_prefer * item.cantidad
-                            else:
-                                cantidad = item.cantidad
-                            item.producto.cantidad += cantidad
-                            item.producto.save()
-                    venta.estado = "rechazado"
-
-                elif data_json["status"] == "cancelled" and not (
-                    venta.estado == "rechazado" or venta.estado == "aprobado"
-                ):
-                    if venta.estado == "espera_respuesta_pasarela":
-                        ventas_productos = VentaProducts.objects.filter(venta=venta)
-                        for item in ventas_productos:
-                            cantidad = 0
-                            if item.by_venta_caja:
-                                cantidad = item.producto.cantidad_cajas * item.cantidad
-                            elif item.by_mayor:
-                                cantidad = item.producto.cantidad_cajas_prefer * item.cantidad
-                            else:
-                                cantidad = item.cantidad
-                            item.producto.cantidad += cantidad
-                            item.producto.save()
-                    venta.estado = "error_pasarela"
-
-                elif data_json["status"] == "pending" and not (
-                    venta.estado == "rechazado" or venta.estado == "aprobado"
-                ):
-                    if venta.estado == "proceso":
-                        ventas_productos = VentaProducts.objects.filter(venta=venta)
-                        for item in ventas_productos:
-                            cantidad = 0
-                            if item.by_venta_caja:
-                                cantidad = item.producto.cantidad_cajas * item.cantidad
-                            elif item.by_mayor:
-                                cantidad = item.producto.cantidad_cajas_prefer * item.cantidad
-                            else:
-                                cantidad = item.cantidad
-                            item.producto.cantidad -= cantidad
-                            item.producto.save()
-                    venta.estado = "espera_respuesta_pasarela"
-
-                if venta.cliente.email:
-                    send_invoice(venta.cliente.email, venta, ventas_productos)
-                    const = Constante.objects.filter(nombre="email_notificacion").first()
-                    email_notification = const.valor_tipo
-                    send_invoice(email_notification, venta, ventas_productos)
-
-                if "payment_method_id" in data_json:
-                    venta.metodo_pago = data_json["payment_method_id"]
-                venta.save()
-            return HttpResponse(status=200)
-        return HttpResponse(status=400)
-    return HttpResponse(status=500)
