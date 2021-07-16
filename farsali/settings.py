@@ -59,7 +59,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "makeupgalleryco@gmail.com"
 EMAIL_HOST_PASSWORD = "makeupgallery2021"
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "makeupgalleryco@gmail.com"
 
 # Config. keys CAPTCHA
 

@@ -20,7 +20,7 @@
                   <form id="form-checkout-up" method="POST" action="{% url 'datos_cliente' %}">
                     {% csrf_token %}
                     <input type="hidden" id="productos-payment-1" name="productos-payment-1">
-                    <button class="btn btn-sm btn-checkout" type="submit">Finalizar Compra</button>
+                    <button class="btn btn-sm btn-checkout" onclick="JavaScript:return checkoutSubmitDetailcheckoutSubmitButtons('1');" type="button">Finalizar Compra</button>
                 </form>
               </div>
           </div>
@@ -95,12 +95,9 @@
         
         <form id="form-checkout-down" method="POST" action="{% url 'datos_cliente' %}">
             {% csrf_token %}
-            {% if validate_buy %}
-              <input type="hidden" id="validate_buy"  name="validate_buy">
-            {% endif %}
             <input type="hidden" id="productos-payment-2"  name="productos-payment-2">
             <div class="card-footer bg-light d-flex justify-content-end">
-              <button class="btn btn-sm btn-checkout" type="submit">Finalizar Compra</button>
+              <button class="btn btn-sm btn-checkout" type="button" onclick="JavaScript:return checkoutSubmitButtons('2');">Finalizar Compra</button>
             </div>
         </form>
         
