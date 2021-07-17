@@ -2457,6 +2457,7 @@ p {
   width: 100%;
   display: block;
   color: #ffff;
+  padding: 20px;
 }
 .container-footer .footer a {
   color: #ffff;
