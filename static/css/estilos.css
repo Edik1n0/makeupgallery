@@ -2449,6 +2449,9 @@ p {
   margin-bottom: 1em;
 }
 
+.container-footer {
+  background: #202020;
+}
 .container-footer .footer {
   margin-top: 60px;
   position: relative;
