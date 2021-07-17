@@ -71,11 +71,11 @@
 
 
                             <div class="form-group">
-                                {% if producto.cantidad > 24 %}
+                                <!-- {% if producto.cantidad > 24 %}
                                     <p class="products__detail--paragraph">{{ producto.cantidad }} disponibles</p>
                                 {% else %}
                                     <p class="products__detail--paragraph" style="color: red;">{{ producto.cantidad }} disponibles</p>
-                                {% endif %}
+                                {% endif %} -->
                                 <label class="product__detail-quantity-title" for="quantity">Especificaciones para la compra</label>
                                 <input type="text" name="specs" id="especificaciones-{{ producto.id }}" class="form-control">
                             </div>
@@ -111,7 +111,7 @@
             <div class="product__detail--carousel-list owl-carousel" id="product-slider">
                 {% if producto.url_video %}
                     <div class="product__detail--carousel-item">
-                        <a href="https://www.youtube.com/embed/{{ producto.url_video|safe }}?controls=0&autoplay=1&mute=0&loop=1" data-fancybox="gallery" data-caption="{{ producto.nombre|safe }}"><iframe width="560" height="315" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></a>
+                        <a href="https://www.youtube.com/embed/{{ producto.url_video|safe }}?controls=0&autoplay=1&mute=0&loop=1" data-fancybox="gallery" data-caption="{{ producto.nombre|safe }}"><iframe width="560" height="315" src="https://www.youtube.com/embed/{{ producto.url_video|safe }}?controls=0&mute=0&loop=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></a>
                     </div>
                 {% endif %}
                 {% if producto.fotos %}
