@@ -42,7 +42,6 @@ p {
 /*HEADER*/
 .enlaces-pdetail {
   display: flex;
-  margin: 10px;
 }
 @media (max-width: 768px) {
   .enlaces-pdetail {
@@ -50,6 +49,7 @@ p {
   }
 }
 .enlaces-pdetail .enlace__producto {
+  margin-right: 10px;
   color: #651168;
   text-decoration: none;
 }
@@ -210,6 +210,8 @@ p {
   margin-left: auto;
   margin-right: auto;
   max-width: 1200px;
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .introductions__title {
