@@ -44,12 +44,12 @@ p {
 
 .enlaces-pdetail {
     display: flex;
-    margin: 10px;
 
     @media (max-width: 768px) {
         display: grid;
     }
     .enlace__producto {
+        margin-right: 10px;
         color: $Mor;
         text-decoration: none;
         &:hover {
@@ -342,6 +342,8 @@ p {
     margin-left: auto;
     margin-right: auto;
     max-width: 1200px;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .introductions__title {
