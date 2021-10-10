@@ -58,7 +58,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "makeupgalleryco@gmail.com"
-EMAIL_HOST_PASSWORD = "makeupgallery2021"
+EMAIL_HOST_PASSWORD = "fvbqpaxikfnpvilt"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
